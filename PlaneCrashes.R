@@ -55,7 +55,7 @@ compiledData$crashYear <- format(compiledData$crashDates, format="%Y")
 
 #Fix certain locations to allow for mapping
 compiledData$crashLocation<-str_replace(compiledData$crashLoc, "Near ", "")
-compiledData$crashLococation<-str_replace(compiledData$crashLoc, "Off ", "")
+compiledData$crashLocation<-str_replace(compiledData$crashLoc, "Off ", "")
 
 #write this out if you want
 write.csv(compiledData, "CompiledCrashData.csv")
