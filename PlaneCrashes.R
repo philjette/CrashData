@@ -12,33 +12,22 @@ getData <-function(year){
 url<-paste("http://www.planecrashinfo.com/", year, "/", year, ".htm", sep="")  
   
 # Read and parse HTML file
-html.raw = htmlTreeParse(url,useInternal = TRUE)
+html.raw <- htmlTreeParse(url,useInternal = TRUE)
+html.parse<-unlist(xpathApply(html.raw, '//td', function(x)
+  xpathSApply(x,".//text()", xmlValue)))
 
-# Extract HTML.
-html.parse = unlist(xpathApply(html.raw, '//td', xmlValue))
 #get rid of field names
 html.parse<-html.parse[5:length(html.parse)]
 
 #Get fields into vectors to prepare for data frame
-crashDates <- html.parse[seq(1, length(html.parse), 4)]
-crashLocation <- html.parse[seq(2, length(html.parse), 4)]
-crashLocation<-str_replace(crashLocation, pattern="USSR", replacement="ussr")
-crashLocation<-str_replace(crashLocation, pattern="\\?", replacement="NA")
-crashLocation<-str_replace(crashLocation, pattern="C-", replacement="c-")
-crashType <- html.parse[seq(3, length(html.parse), 4)]
-
-#Location must be split between location and operator
-pat <- "(?<=[[:lower:]])(?=[[:upper:](])"
-crashLocation<-strsplit(crashLocation, pat, perl=TRUE)
-crashLoc<-unlist(crashLocation)[seq(1, length(crashLocation)*2, 2)]
-crashOp<-unlist(crashLocation)[seq(2, length(crashLocation)*2, 2)]
-
-#split fatalities from total on board
-crashOutcome <- html.parse[seq(4, length(html.parse), 4)]
-
+crashDates <- html.parse[seq(1, length(html.parse), 6)]
+crashLocation <- html.parse[seq(2, length(html.parse), 6)]
+crashOperator <- html.parse[seq(3, length(html.parse), 6)]
+crashType <- html.parse[seq(4, length(html.parse), 6)]
+crashOutcome <- html.parse[seq(6, length(html.parse), 6)]
 
 #compile into data.frame
-data<-data.frame(cbind(crashDates,crashLoc,crashOp,crashType,crashOutcome))
+data<-data.frame(cbind(crashDates,crashLocation,crashOperator,crashType,crashOutcome))
 
 return(data)
 
@@ -64,8 +53,8 @@ compiledData$Prop<-round(compiledData$crashF/compiledData$crashP,2)
 compiledData$crashDates<-as.Date(compiledData$crashDates,"%d %b %Y")
 
 #Fix certain locations to allow for mapping
-compiledData$crashLoc<-str_replace(compiledData$crashLoc, "Near ", "")
-compiledData$crashLoc<-str_replace(compiledData$crashLoc, "Off ", "")
+compiledData$crashLocation<-str_replace(compiledData$crashLoc, "Near ", "")
+compiledData$crashLococation<-str_replace(compiledData$crashLoc, "Off ", "")
 
 #write this out if you want
 write.csv(compiledData, "CompiledCrashData.csv")
