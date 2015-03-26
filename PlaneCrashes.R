@@ -51,6 +51,7 @@ compiledData$crashF <-as.numeric(compiledData$crashF)
 compiledData$crashP <-as.numeric(compiledData$crashP)
 compiledData$Prop<-round(compiledData$crashF/compiledData$crashP,2)
 compiledData$crashDates<-as.Date(compiledData$crashDates,"%d %b %Y")
+compiledData$crashYear <- format(compiledData$crashDates, format="%Y")
 
 #Fix certain locations to allow for mapping
 compiledData$crashLocation<-str_replace(compiledData$crashLoc, "Near ", "")
