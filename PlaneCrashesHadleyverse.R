@@ -5,6 +5,7 @@ library(rvest)
 library(magrittr)
 library(stringr)
 library(pbapply)
+library(lubridate)
 
 
 #' retrieve crash data for a given year
